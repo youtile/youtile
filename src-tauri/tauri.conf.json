@@ -63,7 +63,9 @@
         "height": 270,
         "resizable": true,
         "title": "Youtile",
-        "width": 480
+        "width": 640,
+        "minWidth": 480,
+        "minHeight": 270
       }
     ]
   }
