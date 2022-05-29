@@ -59,6 +59,7 @@
         "decorations": false,
         "transparent": true,
         "alwaysOnTop": false,
+        "focus": true,
         "height": 270,
         "resizable": true,
         "title": "Youtile",

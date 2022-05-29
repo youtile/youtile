@@ -29,14 +29,21 @@
       audio.volume = 0.1;
 
       // TEMP //
-      video.play();
-      audio.play();
+      // video.play();
+      // audio.play();
 
       // Keep the audio and video in sync:
       video.addEventListener('waiting', () => {
         audio.pause();
       });
       video.addEventListener('playing', () => {
+        audio.currentTime = video.currentTime;
+        audio.play();
+      });
+      video.addEventListener('pause', () => {
+        audio.pause();
+      });
+      video.addEventListener('play', () => {
         audio.currentTime = video.currentTime;
         audio.play();
       });
@@ -93,18 +100,17 @@
   }
 
   main {
-    width: calc(100vw - 3.5px);
-    height: calc(100vh - 3.5px);
+    width: 100vw;
+    height: 100vh;
 
     display: flex;
     flex-direction: column;
 
     margin: 0;
-    padding: 1.5px;
+    padding: 0;
 
-    background-color: #77777777;
+    background-color: #33362f;
 
-    border-radius: 8px;
     overflow: hidden;
   }
 
@@ -172,16 +178,14 @@
 
   .titlebar {
     position: absolute;
-    width: calc(100vw - 3.5px);
+    width: 100vw;
     height: 25px;
-    top: 1.5px;
-    left: 1.5px;
+    top: 0;
+    left: 0;
     z-index: 5;
 
     background: transparent;
     user-select: none;
-    border-top-left-radius: 7px;
-    border-top-right-radius: 7px;
   }
 
   #video {
@@ -190,7 +194,7 @@
     width: 100%;
     height: 100%;
 
-    border-radius: 7px;
+    pointer-events: none;
   }
 
   #audio {
