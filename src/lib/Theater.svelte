@@ -4,9 +4,12 @@
   import { videoCode } from "./store/store";
   import { onMount } from "svelte";
   import { invoke } from '@tauri-apps/api/tauri';
-import Loader from './comp/Loader.svelte';
+  import Loader from './comp/Loader.svelte';
+  import Controls from './comp/Controls.svelte';
 
   const videoId = $videoCode;
+  let video: HTMLVideoElement | undefined;
+  let audio: HTMLVideoElement | undefined;
   let loading = true;
 
   onMount(() => {
@@ -18,14 +21,15 @@ import Loader from './comp/Loader.svelte';
       appWindow.setSize(new PhysicalSize(Math.round(size.height * 1.777778), size.height));
     });
 
+    video = document.getElementById('video') as HTMLVideoElement;
+    audio = document.getElementById('audio') as HTMLVideoElement;
+
     invoke('stream_video', { code: videoId }).then((url: string) => {
       // Split the url into video and audio:
       const videoUrl = url.split(' ')[0];
       const audioUrl = url.split(' ')[1];
 
       // Fetch and create the elements:
-      const video = document.getElementById('video') as HTMLVideoElement;
-      const audio = document.getElementById('audio') as HTMLVideoElement;
       const videoSource = document.createElement("source");
       const audioSource = document.createElement("source");
       
@@ -76,7 +80,7 @@ import Loader from './comp/Loader.svelte';
 </script>
 
 <div class="theater">
-  <div class="titlebar" data-tauri-drag-region />
+  <div class="drag-area" data-tauri-drag-region></div>
 
   <!-- svelte-ignore a11y-media-has-caption -->
   <video id="video" style="opacity: { loading ? '0' : '1' };"></video>
@@ -87,95 +91,23 @@ import Loader from './comp/Loader.svelte';
     <Loader isLoading={loading} />
   </div>
 
-  <div class="overlay">
-    <button class="close-button" on:click={closeWindow}>
-      <img
-        src="https://api.iconify.design/material-symbols:close.svg"
-        alt="close"
-      />
-    </button>
-    <button class="pin-button" on:click={togglePin}>
-      <img
-        src="https://api.iconify.design/mdi:arrange-bring-forward.svg"
-        alt="pin"
-      />
-    </button>
-  </div>
+  <Controls videoSource={video} audioSource={audio} />
 </div>
 
 <style lang="scss">
   .theater {
     position: relative;
 
-    .overlay {
-      position: absolute;
-      top: 0;
-      right: 0;
-      width: 28px;
-      height: 100%;
-      pointer-events: none;
-      user-select: none;
-      z-index: 6;
+    width: 100vw;
+    height: 100vh;
 
-      button {
-        width: 25px;
-        height: 15px;
-        margin-right: 3px;
-        pointer-events: all !important;
-        background: none;
-        border: none;
-        outline: none;
-        cursor: pointer;
-
-        &.close-button {
-          position: relative;
-
-          img {
-            width: 18px;
-            height: 18px;
-
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: invert(100%);
-            opacity: .85;
-
-            &:hover {
-              opacity: 1;
-            }
-          }
-        }
-
-        &.pin-button {
-          position: relative;
-
-          img {
-            width: 14px;
-            height: 14px;
-
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            filter: invert(100%);
-            opacity: .85;
-
-            &:hover {
-              opacity: 1;
-            }
-          }
-        }
-      }
-    }
-
-    .titlebar {
+    .drag-area {
       position: absolute;
       width: 100vw;
-      height: 25px;
+      height: 100vh;
       top: 0;
       left: 0;
-      z-index: 5;
+      z-index: 1;
 
       background: transparent;
       user-select: none;

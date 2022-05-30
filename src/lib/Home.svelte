@@ -10,7 +10,7 @@
 
   let selectedVideo: Video | undefined = undefined;
   let isSearching = false;
-  let code = 'Q5ztUFmIR0Q';
+  let code = '0WDGyLXzPok';
 
   onMount(() => {
     appWindow.setDecorations(true);
@@ -132,9 +132,9 @@
           position: absolute;
 
           width: 252px;
-          height: 48px;
+          height: 42px;
 
-          bottom: -2px;
+          bottom: 4px;
           left: 0;
 
           padding-left: 8px;
