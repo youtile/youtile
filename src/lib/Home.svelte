@@ -1,15 +1,33 @@
 <script lang="ts">
   import { invoke } from "@tauri-apps/api/tauri";
+  import { emit } from "@tauri-apps/api/event";
   import { secondsToDuration } from "./core/Duration";
   import type Video from "./core/IVideo";
+  import { videoCode } from "./store/store";
+  import { onMount } from "svelte";
+  import { appWindow, LogicalSize } from "@tauri-apps/api/window";
 
   let selectedVideo: Video | undefined = undefined;
-  let code = 'wXF3HIhnUOg';
+  let code = 'Q5ztUFmIR0Q';
+
+  onMount(() => {
+    appWindow.setDecorations(true);
+    appWindow.setMinSize(new LogicalSize(323 + 32, 270));
+    appWindow.setSize(new LogicalSize(323 + 32, 270));
+  });
 
   function search() {
     invoke('get_video_info', { code: code }).then((video: Video) => {
       selectedVideo = video;
     });
+  }
+
+  function play() {
+    if (selectedVideo) {
+      videoCode.set(code);
+
+      emit('play_video');
+    }
   }
 </script>
 
@@ -36,13 +54,13 @@
   <div class="actions">
     <input class="code" type="text" name="video code" placeholder="Video code..." bind:value={code}>
     <div class="buttons">
-      <button class="search" on:click={search}>
+      <button class="search" on:click={search} disabled={!(code !== '')}>
         <img
           src="https://api.iconify.design/fa:search.svg"
           alt="pin"
         />
       </button>
-      <button class="play">
+      <button class="play" on:click={play} disabled={!selectedVideo}>
         <img
           src="https://api.iconify.design/carbon:play-filled-alt.svg"
           alt="pin"
@@ -73,7 +91,7 @@
 
       display: flex;
 
-      background-color: #292b2f;
+      background-color: #242424;
 
       .thumbnail {
         position: relative;
@@ -96,7 +114,7 @@
           min-width: 320px;
           height: 180px;
 
-          background-color: #222427;
+          background-color: #1c1c1c;
 
           border-radius: 6px;
           border: 1.5px solid #424448;
@@ -202,6 +220,7 @@
       display: flex;
       justify-content: space-between;
 
+      background-color: #1c1c1c;
       border-top: 1.5px solid #424448;
 
       .code {
@@ -209,9 +228,9 @@
         height: 26px;
         font-family: FiraCode;
 
-        background-color: #292b2f;
+        background-color: #2f2f2f;
         border-radius: 6px;
-        border: 1.5px solid #424448;
+        border: 1.5px solid #4e5055;
         outline: none;
 
         color: #ffffffbb;
@@ -223,50 +242,81 @@
       }
 
       .buttons {
+        user-select: none;
+
         button {
           width: 30px;
           height: 30px;
 
-          background-color: #292b2f;
+          background-color: transparent;
           border-radius: 6px;
-          border: 1.5px solid #424448;
+          border: none;
           outline: none;
 
           cursor: pointer;
           user-select: none;
+
+          &:hover {
+            background-color: #ffffff1a;
+          }
         }
 
         .search {
-          background-color: rgb(46, 61, 68);
-          border-color:rgb(69, 85, 96);
-
+          position: relative;
           margin-right: 8px;
 
-          &:hover {
-            border-color:rgb(87, 107, 120);
+          img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            width: 14px;
+            height: 14px;
+
+            filter: invert(60%);
           }
 
-          img {
-            width: 100%;
-            height: 100%;
-
+          &:hover img {
             filter: invert(80%);
+          }
+
+          &:disabled {
+            background-color: transparent !important;
+            cursor: default;
+
+            img {
+              filter: invert(30%);
+            }
           }
         }
 
         .play {
-          background-color: rgb(46, 68, 56);
-          border-color:rgb(69, 96, 82);
-
-          &:hover {
-            border-color:rgb(80, 123, 103);
-          }
+          position: relative;
 
           img {
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
 
+            width: 14px;
+            height: 14px;
+
+            filter: invert(60%);
+          }
+
+          &:hover img {
             filter: invert(80%);
+          }
+
+          &:disabled {
+            background-color: transparent !important;
+            cursor: default;
+
+            img {
+              filter: invert(30%);
+            }
           }
         }
       }

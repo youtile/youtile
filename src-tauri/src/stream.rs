@@ -11,7 +11,7 @@ pub async fn stream_video(code: String) -> String {
   let mut bestvid = String::new();
   let mut bestaud = String::new();
   for stream in streams {
-    if stream.is_video() && stream.mime_type().contains("video/webm") {
+    if stream.is_video() {
       println!("video stream: {}b {}", stream.bitrate(), stream.mime_type());
       if bestvid == String::new() {
         bestvid = stream.url().to_string();
