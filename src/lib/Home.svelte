@@ -6,19 +6,24 @@
   import { videoCode } from "./store/store";
   import { onMount } from "svelte";
   import { appWindow, LogicalSize } from "@tauri-apps/api/window";
+  import Loader from "./comp/Loader.svelte";
 
   let selectedVideo: Video | undefined = undefined;
+  let isSearching = false;
   let code = 'Q5ztUFmIR0Q';
 
   onMount(() => {
     appWindow.setDecorations(true);
-    appWindow.setMinSize(new LogicalSize(323 + 32, 270));
-    appWindow.setSize(new LogicalSize(323 + 32, 270));
+    appWindow.setMinSize(new LogicalSize(355, 270));
+    appWindow.setMaxSize(new LogicalSize(355, 270));
+    appWindow.setSize(new LogicalSize(355, 270));
   });
 
   function search() {
+    isSearching = true;
     invoke('get_video_info', { code: code }).then((video: Video) => {
       selectedVideo = video;
+      isSearching = false;
     });
   }
 
@@ -42,9 +47,12 @@
         <div class="duration"> { secondsToDuration(selectedVideo.duration) } </div>
       </div>
     {:else}
-      <div class="thumbnail-placeholder">
-      </div>
+      <div class="thumbnail-placeholder" />
     {/if}
+
+    <div class="thumbnail-overlay">
+      <Loader isLoading={isSearching} animSpeed={0.2} />
+    </div>
 
     <div class="description">
       { selectedVideo ? selectedVideo.description : '' }
@@ -124,9 +132,9 @@
           position: absolute;
 
           width: 252px;
-          height: 32px;
+          height: 48px;
 
-          bottom: -5px;
+          bottom: -2px;
           left: 0;
 
           padding-left: 8px;
@@ -135,7 +143,7 @@
           z-index: 1;
           
           font-weight: 700;
-          white-space: nowrap;
+          white-space: normal;
           text-overflow: ellipsis;
           overflow: hidden;
         }
@@ -162,8 +170,8 @@
           width: fit-content;
           height: 12px;
 
-          top: 4px;
-          right: 7px;
+          top: 8px;
+          right: 8px;
 
           padding: 1px 4px 4px 4px;
           border-radius: 4px;
@@ -189,6 +197,17 @@
           border-bottom-left-radius: 5px;
           border-bottom-right-radius: 5px;
         }
+      }
+
+      .thumbnail-overlay {
+        position: absolute;
+
+        top: 17px;
+        left: 17px;
+
+        width: 320px;
+        min-width: 320px;
+        height: 180px;
       }
 
       .description {
@@ -221,16 +240,16 @@
       justify-content: space-between;
 
       background-color: #1c1c1c;
-      border-top: 1.5px solid #424448;
+      border-top: 1.5px solid #404040;
 
       .code {
         width: 128px;
         height: 26px;
         font-family: FiraCode;
 
-        background-color: #2f2f2f;
+        background-color: #313131;
         border-radius: 6px;
-        border: 1.5px solid #4e5055;
+        border: 1.5px solid #404040;
         outline: none;
 
         color: #ffffffbb;
@@ -255,69 +274,46 @@
 
           cursor: pointer;
           user-select: none;
+          transition: background-color 0.1s;
 
           &:hover {
             background-color: #ffffff1a;
+          }
+
+          img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+
+            width: 14px;
+            height: 14px;
+            transition: filter 0.1s;
+
+            filter: invert(60%);
+          }
+
+          &:hover img {
+            filter: invert(80%);
+          }
+
+          &:disabled {
+            background-color: transparent !important;
+            cursor: default;
+
+            img {
+              filter: invert(30%);
+            }
           }
         }
 
         .search {
           position: relative;
           margin-right: 8px;
-
-          img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-
-            width: 14px;
-            height: 14px;
-
-            filter: invert(60%);
-          }
-
-          &:hover img {
-            filter: invert(80%);
-          }
-
-          &:disabled {
-            background-color: transparent !important;
-            cursor: default;
-
-            img {
-              filter: invert(30%);
-            }
-          }
         }
 
         .play {
           position: relative;
-
-          img {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-
-            width: 14px;
-            height: 14px;
-
-            filter: invert(60%);
-          }
-
-          &:hover img {
-            filter: invert(80%);
-          }
-
-          &:disabled {
-            background-color: transparent !important;
-            cursor: default;
-
-            img {
-              filter: invert(30%);
-            }
-          }
         }
       }
     }

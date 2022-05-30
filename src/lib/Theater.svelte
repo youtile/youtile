@@ -4,6 +4,7 @@
   import { videoCode } from "./store/store";
   import { onMount } from "svelte";
   import { invoke } from '@tauri-apps/api/tauri';
+import Loader from './comp/Loader.svelte';
 
   const videoId = $videoCode;
   let loading = true;
@@ -12,6 +13,7 @@
     appWindow.setDecorations(false);
 
     appWindow.setMinSize(new LogicalSize(240, 135));
+    appWindow.setMaxSize(null);
     appWindow.innerSize().then((size: PhysicalSize) => {
       appWindow.setSize(new PhysicalSize(Math.round(size.height * 1.777778), size.height));
     });
@@ -36,7 +38,7 @@
       // Add the sources into the video elements:
       video.appendChild(videoSource);
       audio.appendChild(audioSource);
-      audio.volume = 0.4;
+      audio.volume = 0.05;
 
       // TEMP //
       video.play();
@@ -77,32 +79,12 @@
   <div class="titlebar" data-tauri-drag-region />
 
   <!-- svelte-ignore a11y-media-has-caption -->
-  <video id="video" style="display: { loading ? 'none' : 'block' };"></video>
+  <video id="video" style="opacity: { loading ? '0' : '1' };"></video>
   <!-- svelte-ignore a11y-media-has-caption -->
   <video id="audio" style="display: none;"></video>
 
-  <div class="loader" style="opacity: { loading ? '1' : '0' };">
-    <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-      viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
-        <rect x="20" y="50" width="4" height="10" fill="#fff">
-          <animateTransform attributeType="xml"
-            attributeName="transform" type="translate"
-            values="0 0; 0 20; 0 0"
-            begin="0" dur="0.6s" repeatCount="indefinite" />
-        </rect>
-        <rect x="30" y="50" width="4" height="10" fill="#fff">
-          <animateTransform attributeType="xml"
-            attributeName="transform" type="translate"
-            values="0 0; 0 20; 0 0"
-            begin="0.2s" dur="0.6s" repeatCount="indefinite" />
-        </rect>
-        <rect x="40" y="50" width="4" height="10" fill="#fff">
-          <animateTransform attributeType="xml"
-            attributeName="transform" type="translate"
-            values="0 0; 0 20; 0 0"
-            begin="0.4s" dur="0.6s" repeatCount="indefinite" />
-        </rect>
-    </svg>
+  <div class="loader">
+    <Loader isLoading={loading} />
   </div>
 
   <div class="overlay">
@@ -201,20 +183,12 @@
 
     .loader {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 100px;
-      height: 100px;
 
-      svg {
-        position: absolute;
-        top: calc(50% - 20px);
-        left: calc(50% + 20px);
-        transform: translate(-50%, -50%);
-        width: 100px;
-        height: 100px;
-      }
+      top: 0;
+      left: 0;
+
+      width: 100vw;
+      height: 100vh;
     }
 
     #video {
@@ -224,6 +198,7 @@
       height: 100%;
 
       pointer-events: none;
+      transition: opacity 0.5s;
     }
 
     #audio {
