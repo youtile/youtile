@@ -10,30 +10,49 @@
 
   let selectedVideo: Video | undefined = undefined;
   let isSearching = false;
-  let code = '0WDGyLXzPok';
+  let errorMessage = '';
+  let code = $videoCode;
 
   onMount(() => {
     appWindow.setDecorations(true);
     appWindow.setMinSize(new LogicalSize(355, 270));
     appWindow.setMaxSize(new LogicalSize(355, 270));
     appWindow.setSize(new LogicalSize(355, 270));
+
+    if (code != '') {
+      search();
+    }
   });
 
-  function search() {
+  /** A parsed version of the code which recognizes URLs */
+  const parsedCode = () => {
+    if (code.includes('youtube.com') == false) return code;
+    else if (code.match(/(?<=\?v\=).+?(?=\&)/g)) return code.match(/(?<=\?v\=).+?(?=\&)/g)[0];
+    else if (code.match(/(?<=\?v\=).*/g)) return code.match(/(?<=\?v\=).*/g)[0];
+    return '-';
+  };
+
+  /** Search for the video information connected to the current code */
+  const search = () => {
     isSearching = true;
-    invoke('get_video_info', { code: code }).then((video: Video) => {
+    selectedVideo = undefined;
+    errorMessage = '';
+    invoke('get_video_info', { code: parsedCode() }).then((video: Video) => {
       selectedVideo = video;
       isSearching = false;
+    }).catch(e => {
+      errorMessage = e;
+      isSearching = false;
     });
-  }
+  };
 
-  function play() {
+  /** Play the currently selected video */
+  const play = () => {
     if (selectedVideo) {
-      videoCode.set(code);
-
+      videoCode.set(parsedCode());
       emit('play_video');
     }
-  }
+  };
 </script>
 
 
@@ -52,6 +71,7 @@
 
     <div class="thumbnail-overlay">
       <Loader isLoading={isSearching} animSpeed={0.2} />
+      <div class="error" style="opacity: { errorMessage == '' ? '0' : '1' };"> { errorMessage } </div>
     </div>
 
     <div class="description">
@@ -60,7 +80,7 @@
   </div>
 
   <div class="actions">
-    <input class="code" type="text" name="video code" placeholder="Video code..." bind:value={code}>
+    <input class="code" type="text" name="video code" placeholder="Youtube link..." bind:value={code}>
     <div class="buttons">
       <button class="search" on:click={search} disabled={!(code !== '')}>
         <img
@@ -208,6 +228,26 @@
         width: 320px;
         min-width: 320px;
         height: 180px;
+
+        .error {
+          position: absolute;
+
+          top: 0;
+          left: 0;
+
+          width: 100%;
+          height: 100%;
+
+          pointer-events: none;
+
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          color: #ef5859cc;
+          font-family: FiraCode;
+        }
       }
 
       .description {
@@ -243,7 +283,8 @@
       border-top: 1.5px solid #404040;
 
       .code {
-        width: 128px;
+        flex-grow: 1;
+        margin-right: 12px;
         height: 26px;
         font-family: FiraCode;
 

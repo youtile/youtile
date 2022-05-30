@@ -5,6 +5,7 @@
 
 </script>
 
+
 <div class="loader" style="opacity: { isLoading ? '0.8' : '0' }; transition: opacity { animSpeed }s;">
   <svg version="1.1" id="L9" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
     viewBox="0 0 100 100" enable-background="new 0 0 0 0" xml:space="preserve">
@@ -28,6 +29,7 @@
       </rect>
   </svg>
 </div>
+
 
 <style lang="scss">
   .loader {

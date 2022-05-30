@@ -1,6 +1,5 @@
 <script lang="ts">
   import { appWindow, LogicalSize, PhysicalSize } from '@tauri-apps/api/window';
-  import { emit } from "@tauri-apps/api/event";
   import { videoCode } from "./store/store";
   import { onMount } from "svelte";
   import { invoke } from '@tauri-apps/api/tauri';
@@ -43,14 +42,20 @@
       video.appendChild(videoSource);
       audio.appendChild(audioSource);
       audio.volume = 0.05;
-
-      // TEMP //
       video.play();
       audio.play();
 
       // Keep the audio and video in sync:
       video.addEventListener('waiting', () => {
         audio.pause();
+        video.pause();
+
+        // Stop the video to buffer for 2 seconds.
+        setTimeout(() => {
+          video.play();
+          audio.currentTime = video.currentTime;
+          audio.play();
+        }, 2000);
       });
       video.addEventListener('playing', () => {
         audio.currentTime = video.currentTime;
@@ -66,22 +71,10 @@
       });
     });
   });
-
-  let pinned = false;
-  function togglePin() {
-    appWindow.setAlwaysOnTop(!pinned);
-    pinned = !pinned;
-  }
-
-  function closeWindow() {
-    //appWindow.close();
-    emit('stop_video');
-  }
 </script>
 
-<div class="theater">
-  <div class="drag-area" data-tauri-drag-region></div>
 
+<div class="theater">
   <!-- svelte-ignore a11y-media-has-caption -->
   <video id="video" style="opacity: { loading ? '0' : '1' };"></video>
   <!-- svelte-ignore a11y-media-has-caption -->
@@ -91,8 +84,11 @@
     <Loader isLoading={loading} />
   </div>
 
-  <Controls videoSource={video} audioSource={audio} />
+  <div class="control-bar" data-tauri-drag-region>
+    <Controls videoSource={video} audioSource={audio} />
+  </div>
 </div>
+
 
 <style lang="scss">
   .theater {
@@ -100,18 +96,6 @@
 
     width: 100vw;
     height: 100vh;
-
-    .drag-area {
-      position: absolute;
-      width: 100vw;
-      height: 100vh;
-      top: 0;
-      left: 0;
-      z-index: 1;
-
-      background: transparent;
-      user-select: none;
-    }
 
     .loader {
       position: absolute;
@@ -121,6 +105,27 @@
 
       width: 100vw;
       height: 100vh;
+    }
+
+    .control-bar {
+      position: absolute;
+
+      width: 100vw;
+      height: 100vh;
+
+      top: 0;
+      left: 0;
+
+      transition: opacity 0.2s, transform 0.2s;
+
+      opacity: 0;
+      transform: translateY(24px);
+      z-index: 1;
+
+      &:hover {
+        opacity: 1;
+        transform: translateY(0px);
+      }
     }
 
     #video {

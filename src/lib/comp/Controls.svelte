@@ -1,6 +1,8 @@
 <script lang="ts">
+  import { emit } from "@tauri-apps/api/event";
   import { appWindow } from "@tauri-apps/api/window";
   import { onMount } from "svelte";
+  import Loader from "./Loader.svelte";
 
   export let videoSource: HTMLVideoElement;
   export let audioSource: HTMLVideoElement;
@@ -10,34 +12,48 @@
   let isPlaying = false;
   let isPinned = false;
   let isMuted = false;
+  let isBuffering = true;
   let volume = 5; // Between 0 and 1000
   let time = 0;
+  let duration = 0;
 
   onMount(() => {
     setTimeout(() => {
       isPlaying = playing();
+      appWindow.setAlwaysOnTop(false); isPinned = false;
       updateSpeakerIcon();
 
+      /* Initialize the sliders */
       document.getElementById('audio-input').style.backgroundSize = (5 - 0) * 100 / (1000 - 0) + '% 100%';
+      document.getElementById('timeline-input').style.backgroundSize = '0% 100%';
 
       /* Setup the video events */
-      videoSource.addEventListener('playing', () => isPlaying = playing());
+      videoSource.addEventListener('playing', () => { isPlaying = playing(); isBuffering = false; });
       videoSource.addEventListener('play', () => isPlaying = playing());
       videoSource.addEventListener('pause', () => isPlaying = playing());
-      videoSource.addEventListener('waiting', () => isPlaying = playing());
+      videoSource.addEventListener('waiting', () => { isPlaying = playing(); isBuffering = true; });
       videoSource.addEventListener('timeupdate', () => { 
-        time = videoSource.currentTime; 
-        document.getElementById('timeline-input').style.backgroundSize = (time - 0) * 100 / (videoSource.duration - 0) + '% 100%';
+        // Update the time and duration of the video:
+        if (timelineBusy == false) {
+          time = videoSource.currentTime; 
+          duration = videoSource.duration;
+          document.getElementById('timeline-input').style.backgroundSize = `calc(${(time - 0) * 100 / (videoSource.duration - 0)}% + 6px) 100%`;
+        }
       });
     }, 100);
 
-    document.getElementById('audio-input').addEventListener('input', handleInputChange);
+    /* Setup the slider input events */
+    document.getElementById('audio-input').addEventListener('input', (e) => { 
+      handleInputChange(e); audioSource.volume = (e.target as any).value / 1000.0; updateSpeakerIcon();
+    });
     document.getElementById('timeline-input').addEventListener('input', (e) => { 
-      handleInputChange(e); videoSource.currentTime = time; audioSource.currentTime = time; 
+      handleInputChange(e); timelineInput();
+    });
+    document.getElementById('timeline-input').addEventListener('change', (e) => { 
+      if (videoSource.currentTime != (e.target as any).value)
+        videoSource.currentTime = (e.target as any).value; audioSource.currentTime = (e.target as any).value; 
     });
   });
-
-  let audioOpen = false;
 
   /** Return different icon based on the selected volume */
   let speakerIcon = 'fluent:speaker-mute-24-filled';
@@ -52,17 +68,30 @@
   const togglePlay = () => { playing() ? videoSource.pause() : videoSource.play(); };
 
   /** Toggle the muted state of the audio */
-  const toggleMute = () => { isMuted = !isMuted; updateSpeakerIcon(); };
+  const toggleMute = () => { isMuted = !isMuted; updateSpeakerIcon(); audioSource.muted = isMuted; };
 
   /** Toggle the pinned state of the window */
   const togglePin = () => { isPinned = !isPinned; appWindow.setAlwaysOnTop(isPinned); };
 
+  /** Return back to the home screen */
+  const returnFunc = () => { emit('stop_video'); };
+
   /** Make sure the audio slider doesn't go away too quickly */
+  let audioOpen = false;
   let audioTimer: NodeJS.Timeout;
   const audioEnter = () => { audioOpen = true; clearTimeout(audioTimer); };
   const audioLeave = () => { audioOpen = true; clearTimeout(audioTimer); audioTimer = setTimeout(() => {
     audioOpen = false;
   }, 500); };
+
+  /** Make sure the timeline isn't updated while the user is moving it */
+  let timelineBusy = false;
+  let timelineTimer: NodeJS.Timeout;
+  const timelineInput = () => { timelineBusy = true; clearTimeout(timelineTimer); timelineTimer = setTimeout(() => {
+    timelineBusy = false;
+    videoSource.currentTime = time; 
+    audioSource.currentTime = time;
+  }, 300); };
 
   /** Animate the audio slider */
   function handleInputChange(e) {
@@ -73,48 +102,51 @@
     const min = target.min;
     const max = target.max;
     const val = target.value;
-
-    updateSpeakerIcon();
-    
-    target.style.backgroundSize = (val - min) * 100 / (max - min) + '% 100%';
+    target.style.backgroundSize = `calc(${(val - min) * 100 / (max - min) + 1}%) 100%`;
   }
 
 </script>
+
 
 <div class="controls">
   <button class="audio" on:mouseenter={audioEnter} on:mouseleave={audioLeave}>
     <img
       src="https://api.iconify.design/{ speakerIcon }.svg"
-      alt="pin" on:click={toggleMute}
+      alt="audio" on:click={toggleMute}
     />
     <input type="range" id="audio-input" min="0" max="1000" bind:value={volume} style="opacity: { audioOpen ? '1' : '0' };">
   </button>
 
-  <button class="play" on:click={togglePlay}>
+  <button class="play" style="{ isBuffering ? 'pointer-events: none' : '' };" on:click={togglePlay}>
     <img
       src="https://api.iconify.design/{ isPlaying ? 'fluent:pause-12-filled' : 'carbon:play-filled-alt' }.svg"
-      alt="pin"
+      style="{ isBuffering ? 'opacity: 0' : '' };"
+      alt="play"
     />
+    <div class="loader">
+      <Loader isLoading={isBuffering} animSpeed={0.1} />
+    </div>
   </button>
 
-  <button class="settings align-end">
-    <img
-      src="https://api.iconify.design/ci:settings-filled.svg"
-      alt="pin"
-    />
-  </button>
-
-  <button class="pin" on:click={togglePin}>
+  <button class="pin align-end" on:click={togglePin}>
     <img
       src="https://api.iconify.design/{ isPinned ? 'mdi:arrange-send-backward' : 'mdi:arrange-bring-forward' }.svg"
       alt="pin"
     />
   </button>
 
+  <button class="return" on:click={returnFunc}>
+    <img
+      src="https://api.iconify.design/icon-park-solid:back.svg"
+      alt="return"
+    />
+  </button>
+
   <div class="timeline">
-    <input type="range" id="timeline-input" min="0" max="1000" bind:value={time}>
+    <input type="range" id="timeline-input" min="0" max={duration} bind:value={time}>
   </div>
 </div>
+
 
 <style lang="scss">
   .controls {
@@ -181,7 +213,19 @@
     }
 
     .play {
+      position: relative;
       margin-left: 8px;
+
+      .loader {
+        position: absolute;
+        width: 16px;
+        height: 16px;
+        opacity: .7;
+
+        top: 50%;
+        left: 50%;
+        transform: translate(-60%, -30%) scale(75%, 75%);
+      }
     }
 
     .audio {
@@ -235,8 +279,8 @@
       }
     }
 
-    .settings {
-      margin-right: 8px;
+    .return {
+      margin-left: 8px;
     }
 
     .align-end {
@@ -289,6 +333,20 @@
           color: transparent;
         }
       }
+    }
+
+    &::before {
+      position: absolute;
+      content: "";
+
+      bottom: 0px;
+      left: 0px;
+
+      width: 100vw;
+      height: 80px;
+
+      pointer-events: none;
+      background: linear-gradient(0deg, #00000088, transparent 100%);
     }
   }
 </style>
