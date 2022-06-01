@@ -20,6 +20,7 @@ serde = { version = "1.0", features = ["derive"] }
 tauri = { version = "1.0.0-rc.12", features = ["api-all"] }
 window-shadows = "0.1.3"
 ytextract = "0.11.0"
+google-youtube3 = "3.1.0+20220303"
 
 [features]
 # by default Tauri runs in production mode
