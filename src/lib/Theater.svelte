@@ -15,6 +15,7 @@
   onMount(() => {
     appWindow.setDecorations(false);
 
+    appWindow.setResizable(true);
     appWindow.setMinSize(new LogicalSize(240, 135));
     appWindow.setMaxSize(null);
     appWindow.innerSize().then((size: PhysicalSize) => {
@@ -26,8 +27,8 @@
 
     invoke('stream_video', { code: videoId }).then((streams: Streams) => {
       // Split the url into video and audio:
-      const videoUrl = streams.video[streams.video.length - 3].url;
-      const audioUrl = streams.audio[streams.audio.length - 1].url;
+      const videoUrl = streams.video[0].url;
+      const audioUrl = streams.audio[0].url;
 
       // Fetch and create the elements:
       const videoSource = document.createElement("source");

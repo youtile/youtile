@@ -61,10 +61,10 @@
         "alwaysOnTop": false,
         "focus": true,
         "height": 270,
-        "resizable": true,
+        "resizable": false,
         "title": "Youtile",
-        "width": 640,
-        "minWidth": 480,
+        "width": 355,
+        "minWidth": 355,
         "minHeight": 270
       }
     ]

@@ -18,6 +18,7 @@
     appWindow.setMinSize(new LogicalSize(355, 270));
     appWindow.setMaxSize(new LogicalSize(355, 270));
     appWindow.setSize(new LogicalSize(355, 270));
+    appWindow.setResizable(false);
 
     if (code != '') {
       search();
