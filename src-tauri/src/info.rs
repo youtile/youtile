@@ -31,7 +31,11 @@ pub async fn get_video_info(code: String) -> Result<VideoInfo, String> {
             thumbnail: video.thumbnails()[video.thumbnails().len()-1].url.to_string(), 
             description: video.description().to_string(), 
             duration: video.duration().as_secs(),
-            channel: ChannelInfo { name: video.channel().name().to_string(), thumbnail: video.clone().channel().thumbnails().next().unwrap().url.to_string() }
+            channel: ChannelInfo { 
+              name: video.channel().name().to_string(), 
+              thumbnail: video.clone().channel().thumbnails()
+                .next().unwrap().url.to_string()
+            }
           })
         },
         Err(e) => {

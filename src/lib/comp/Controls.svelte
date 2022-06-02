@@ -74,7 +74,14 @@
   const togglePin = () => { isPinned = !isPinned; appWindow.setAlwaysOnTop(isPinned); };
 
   /** Return back to the home screen */
-  const returnFunc = () => { emit('stop_video'); };
+  const returnFunc = () => { 
+    var newSource = videoSource.cloneNode(true);
+    videoSource.parentNode.replaceChild(newSource, videoSource);
+    newSource = audioSource.cloneNode(true);
+    audioSource.parentNode.replaceChild(newSource, audioSource);
+    
+    emit('stop_video'); 
+  };
 
   /** Make sure the audio slider doesn't go away too quickly */
   let audioOpen = false;

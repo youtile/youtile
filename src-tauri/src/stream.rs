@@ -1,22 +1,40 @@
-use ytextract::{Video, Stream};
+use ytextract::Stream;
 
 #[derive(serde::Serialize)]
 pub struct StreamResolution {
   width: u16,
   height: u16,
+  fps: u8,
   mine: String,
 }
 
 #[derive(serde::Serialize)]
-pub struct StreamCouple {
-  video_stream: String,
-  audio_stream: String,
+pub struct StreamQuality {
+  audio_sample_rate: u64,
+  audio_channels: u64,
+}
+
+#[derive(serde::Serialize)]
+pub struct VideoStreamInfo {
+  url: String,
   resolution: StreamResolution,
 }
 
+#[derive(serde::Serialize)]
+pub struct AudioStreamInfo {
+  url: String,
+  quality: StreamQuality,
+}
+
+#[derive(serde::Serialize)]
+pub struct StreamsInfo {
+  video: Vec<VideoStreamInfo>,
+  audio: Vec<AudioStreamInfo>,
+}
+
 #[tauri::command]
-pub async fn stream_video(code: String) -> Vec<StreamCouple> {
-  // Get a Client for making request
+pub async fn stream_video(code: String) -> StreamsInfo {
+  // Get a Client for making request.
   let client = ytextract::Client::new();
 
   // Get information about the Video identified by the id "code".
@@ -24,24 +42,36 @@ pub async fn stream_video(code: String) -> Vec<StreamCouple> {
 
   let streams = video.streams().await.unwrap();
 
-  let mut bestvid = String::new();
-  let mut bestaud = String::new();
+  // Build the video and audio channels:
+  let mut video_channels: Vec<VideoStreamInfo> = Vec::new();
+  let mut audio_channels: Vec<AudioStreamInfo> = Vec::new();
   for stream in streams {
     match stream {
         Stream::Video(stream) => {
-          println!("{}/{} : {}", stream.width(), stream.height(), stream.mime_type());
-          if bestvid == String::new() {
-            bestvid = stream.url().to_string();
-          }
+          video_channels.push(VideoStreamInfo {
+            resolution: StreamResolution {
+              width: stream.width() as u16,
+              height: stream.height() as u16,
+              fps: stream.fps() as u8,
+              mine: stream.mime_type().to_string(),
+            },
+            url: stream.url().to_string(),
+          });
         },
         Stream::Audio(stream) => {
-          if bestaud == String::new() {
-            bestaud = stream.url().to_string();
-          }
+          audio_channels.push(AudioStreamInfo {
+            quality: StreamQuality {
+              audio_sample_rate: stream.sample_rate() as u64,
+              audio_channels: stream.channels() as u64,
+            },
+            url: stream.url().to_string(),
+          });
         }
     }
   }
 
-  Vec::new() // TODO: Make the stream couples and return them.
-  //format!("{} {}", bestvid, bestaud)
+  StreamsInfo {
+    video: video_channels,
+    audio: audio_channels,
+  }
 }

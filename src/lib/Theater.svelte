@@ -5,6 +5,7 @@
   import { invoke } from '@tauri-apps/api/tauri';
   import Loader from './comp/Loader.svelte';
   import Controls from './comp/Controls.svelte';
+  import type Streams from './core/IStreams';
 
   const videoId = $videoCode;
   let video: HTMLVideoElement | undefined;
@@ -23,10 +24,10 @@
     video = document.getElementById('video') as HTMLVideoElement;
     audio = document.getElementById('audio') as HTMLVideoElement;
 
-    invoke('stream_video', { code: videoId }).then((url: string) => {
+    invoke('stream_video', { code: videoId }).then((streams: Streams) => {
       // Split the url into video and audio:
-      const videoUrl = url.split(' ')[0];
-      const audioUrl = url.split(' ')[1];
+      const videoUrl = streams.video[streams.video.length - 3].url;
+      const audioUrl = streams.audio[streams.audio.length - 1].url;
 
       // Fetch and create the elements:
       const videoSource = document.createElement("source");
