@@ -1,0 +1,56 @@
+name: App Builder
+
+# define when this workflow should run
+on:
+  workflow_call:
+    inputs:
+      version:
+        description: 'The version of this build'
+        default: 'v0.0.0'
+        required: true
+        type: string
+
+jobs:
+  build:
+    # define all platforms to build for
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [windows-latest]
+        # platform: [macos-latest, ubuntu-latest, windows-latest]
+
+    # run the builds in parallel
+    runs-on: ${{ matrix.platform }}
+    steps:
+    # checkout the repo
+    - name: Checkout
+      uses: actions/checkout@v2
+    # setup the node environment
+    - name: Setup Node
+      uses: actions/setup-node@v1
+      with:
+        node-version: 14
+    # setup the rust environment
+    - name: Setup Rust
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: stable
+    # install webkit2 for ubuntu only
+    - name: Install Webkit2
+      if: matrix.platform == 'ubuntu-latest'
+      run: |
+        sudo apt-get update
+        sudo apt install libwebkit2gtk-4.0-dev
+    # install dependencies
+    - name: Install Dependencies
+      run: yarn
+    # build the app using tauri
+    - name: Build App
+      run: yarn build
+    - uses: tauri-apps/tauri-action@v0
+      with:
+        tagName: "${{ inputs.version }}" # \_\_VERSION\_\_ is automatically replaced by the version
+        releaseName: "Youtile ${{ inputs.version }}"
+        releaseBody: "See the assets to download this version and install."
+        releaseDraft: true
+        prerelease: false

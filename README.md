@@ -1,6 +1,6 @@
 <h1 align="center">
     <div align="center">
-        <img width=140 src="https://github.com/mxcop/youtile/blob/main/.github/logo.png"> 
+        <img width=140 src="https://github.com/mxcop/youtile/blob/main/.github/assets/logo.png"> 
     </div>
 </h1>
 
@@ -47,8 +47,8 @@ So you can watch your favourite Podcasts, Videos, and Listen to your favourite M
 <br>
 
 <div align="center">
-    <img height=250 src="https://github.com/mxcop/youtile/blob/main/.github/home-page.png">  
-    <img height=250 src="https://github.com/mxcop/youtile/blob/main/.github/theater-page.png">
+    <img height=250 src="https://github.com/mxcop/youtile/blob/main/.github/assets/home-page.png">  
+    <img height=250 src="https://github.com/mxcop/youtile/blob/main/.github/assets/theater-page.png">
 </div>
 
 <br>
