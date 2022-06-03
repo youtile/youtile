@@ -7,7 +7,8 @@
 
 <div align="center">
     <b>Youtile</b> - Watching YouTube in a <b>lightweight tile!</b><br>
-
+</div>
+    
 <br>
 
 <div align="center">
@@ -24,20 +25,24 @@
 
 <br>
 
-## <samp><b>Goal</b></samp>
+<h2 align="center"><samp><b>Goal</b></samp></h2>
 
+<p align="center">
 The goal of this Project is to create a Fast and Lightweight video player for YouTube and perhaps other Platforms.<br>
 So you can watch your favourite Podcasts, Videos, and Listen to your favourite Music without a significant hit to your performance.<br>
+</p>
 
 <br>
 
-⚠️ **Avoiding Advertisements** in only a Side-effect of Creating a Custom GUI! This is **NOT our Intention.** ⚠️
-
+<p align="center">
+    ⚠️ <b>Avoiding Advertisements</b> in only a Side-effect of Creating a Custom GUI! This is <b>NOT our Intention.</b> ⚠️
+</p>
+    
 <br>
 
 <br>
 
-## <samp><b>Preview</b></samp> <img src="https://img.shields.io/github/stars/youtile/youtile?color=%238AB4F8&labelColor=101012&label=stars&style=for-the-badge" height=28 align="right" />
+<h2 align="left"><samp><b>Preview</b></samp> <img src="https://img.shields.io/github/stars/youtile/youtile?color=%238AB4F8&labelColor=101012&label=stars&style=for-the-badge" height=28 align="right" /></h2>
 
 <br>
 
@@ -50,11 +55,11 @@ So you can watch your favourite Podcasts, Videos, and Listen to your favourite M
 
 <br>
 
-## <samp><b>Features</b></samp>
+<h2 align="left"><samp><b>Features</b></samp></h2>
 
 <br>
 
-### Should Have
+<h3 align="left">Should Have</h3>
 
 - [x] Home Screen
     - [x] Url Search Function
@@ -72,7 +77,7 @@ So you can watch your favourite Podcasts, Videos, and Listen to your favourite M
     - [ ] Skip Buttons
     - [ ] Keyboard Shortcuts
 
-### Nice to Have
+<h3 align="left">Nice to Have</h3>
 
 - [ ] Tray App?
 - [ ] Twitch Streams
@@ -82,7 +87,7 @@ So you can watch your favourite Podcasts, Videos, and Listen to your favourite M
 
 <br>
 
-## <samp><b>Credits</b></samp>
+<h2 align="left"><samp><b>Credits</b></samp></h2>
 
 * Special Thanks to :heart: for this Awesome Readme Format!
     * [Saimooedits](https://github.com/saimoomedits)
