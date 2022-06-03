@@ -28,7 +28,7 @@
 ## <samp><b>Goal</b></samp>
 
 The goal of this Project is to create a Fast and Lightweight video player for YouTube and perhaps other Platforms.<br>
-So you can watch your favourite Podcasts, Videos, and Listen to your favourite Music without a massive hit to your performance.<br>
+So you can watch your favourite Podcasts, Videos, and Listen to your favourite Music without a significant hit to your performance.<br>
 
 <br>
 
