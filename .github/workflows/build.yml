@@ -2,7 +2,7 @@ name: App Builder
 
 # define when this workflow should run
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
       version:
         description: 'The version of this build'
