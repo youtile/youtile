@@ -38,7 +38,7 @@ So you can watch your favourite Podcasts, Videos, and Listen to your favourite M
 
 <br>
 
-## <samp><b>Preview</b></samp> <img src="https://img.shields.io/github/stars/mxcop/youtile?color=%238AB4F8&labelColor=101012&label=stars&style=for-the-badge" height=28 align="right" /> <img src="https://img.shields.io/github/downloads/mxcop/youtile?color=%238AB4F8&labelColor=101012&label=downloads&style=for-the-badge" height=28 align="right" />
+## <samp><b>Preview</b></samp> <img src="https://img.shields.io/github/stars/youtile/youtile?color=%238AB4F8&labelColor=101012&label=stars&style=for-the-badge" height=28 align="right" />
 
 <br>
 
