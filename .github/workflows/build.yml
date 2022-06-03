@@ -43,13 +43,15 @@ jobs:
         sudo apt install libwebkit2gtk-4.0-dev
     # install dependencies
     - name: Install Dependencies
-      run: yarn
+      run: npm i
     # build the app using tauri
     - name: Build App
-      run: yarn build
+      run: npm run tauri build
     - uses: tauri-apps/tauri-action@v0
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tagName: "${{ inputs.version }}" # \_\_VERSION\_\_ is automatically replaced by the version
+        tagName: inputs.version
         releaseName: "Youtile ${{ inputs.version }}"
         releaseBody: "See the assets to download this version and install."
         releaseDraft: true
