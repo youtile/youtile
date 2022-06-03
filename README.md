@@ -6,8 +6,7 @@
 
 
 <div align="center">
-    <b>Youtile</b> - Watching YouTube in a tile at a <b>blazing speed!</b><br>
-</div>
+    <b>Youtile</b> - Watching YouTube in a <b>lightweight tile!</b><br>
 
 <br>
 
