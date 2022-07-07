@@ -3,7 +3,7 @@ export default interface Streams {
     audio: AudioStream[],
 }
 
-interface VideoStream {
+export interface VideoStream {
     url: string,
     resolution: {
         width: number,

@@ -2,12 +2,14 @@
   import { emit } from "@tauri-apps/api/event";
   import { appWindow } from "@tauri-apps/api/window";
   import { onMount } from "svelte";
+  import type { VideoStream } from "../core/IStreams";
   import Loader from "./Loader.svelte";
 
   export let videoSource: HTMLVideoElement;
   export let audioSource: HTMLVideoElement;
+  export let videoStreams: [VideoStream, VideoStream];
 
-  const playing = () => (videoSource && videoSource.currentTime > 0 && !videoSource.paused && !videoSource.ended && videoSource.readyState > 2);
+  const playing = () => (videoSource && !videoSource.paused && !videoSource.ended && videoSource.readyState > 2);
 
   let isPlaying = false;
   let isPinned = false;
@@ -16,6 +18,9 @@
   let volume = 5; // Between 0 and 1000
   let time = 0;
   let duration = 0;
+  let quality: 'hd' | '4k' = 'hd';
+
+  $: quality, onQualityChanged();
 
   onMount(() => {
     setTimeout(() => {
@@ -112,6 +117,15 @@
     target.style.backgroundSize = `calc(${(val - min) * 100 / (max - min) + 1}%) 100%`;
   }
 
+  /** Called whenever the quality selected is changed */
+  const onQualityChanged = () => {
+    if (videoSource && videoStreams) {
+      const time = videoSource.currentTime;
+      videoSource.setAttribute('src', videoStreams[quality == 'hd' ? 1 : 0].url);
+      videoSource.currentTime = time;
+    }
+  };
+
 </script>
 
 
@@ -151,6 +165,15 @@
 
   <div class="timeline">
     <input type="range" id="timeline-input" min="0" max={duration} bind:value={time}>
+  </div>
+
+  <div class="quality">
+    <button class="quality align-end" on:click={() => quality = quality == 'hd' ? '4k' : 'hd'}>
+      <img
+        src="https://api.iconify.design/{ quality == 'hd' ? 'mdi:high-definition-box' : 'mdi:video-4k-box' }.svg"
+        alt="quality"
+      />
+    </button>
   </div>
 </div>
 
@@ -354,6 +377,23 @@
 
       pointer-events: none;
       background: linear-gradient(0deg, #00000088, transparent 100%);
+    }
+
+    .quality {
+      position: fixed;
+      top: 8px;
+      left: 8px;
+
+      .quality img {
+        width: 24px;
+        height: 24px;
+
+        opacity: .8;
+
+        &:hover {
+          opacity: 1;
+        }
+      }
     }
   }
 </style>

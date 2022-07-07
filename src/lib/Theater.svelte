@@ -6,10 +6,12 @@
   import Loader from './comp/Loader.svelte';
   import Controls from './comp/Controls.svelte';
   import type Streams from './core/IStreams';
+  import type { VideoStream } from './core/IStreams';
 
   const videoId = $videoCode;
   let video: HTMLVideoElement | undefined;
   let audio: HTMLVideoElement | undefined;
+  let videoStreams: [VideoStream, VideoStream] | undefined;
   let loading = true;
 
   onMount(() => {
@@ -27,8 +29,15 @@
 
     invoke('stream_video', { code: videoId }).then((streams: Streams) => {
       // Split the url into video and audio:
-      const videoUrl = streams.video[0].url;
+      const videoUrl = streams.video.find(v => v.resolution.height <= 1080 && v.resolution.width <= 1920).url;
       const audioUrl = streams.audio[0].url;
+
+      videoStreams = [
+        // UHD / 4K
+        streams.video[0],
+        // HD and below
+        streams.video.find(v => v.resolution.height <= 1080 && v.resolution.width <= 1920)
+      ];
 
       // Fetch and create the elements:
       const videoSource = document.createElement("source");
@@ -44,8 +53,13 @@
       video.appendChild(videoSource);
       audio.appendChild(audioSource);
       audio.volume = 0.05;
-      video.play();
-      audio.play();
+
+      // Start the video once its ready:
+      video.addEventListener('canplay', () => {
+        video.play();
+        audio.currentTime = video.currentTime;
+        audio.play();
+      });
 
       // Keep the audio and video in sync:
       video.addEventListener('waiting', () => {
@@ -87,7 +101,7 @@
   </div>
 
   <div class="control-bar" data-tauri-drag-region>
-    <Controls videoSource={video} audioSource={audio} />
+    <Controls videoSource={video} audioSource={audio} videoStreams={videoStreams} />
   </div>
 </div>
 
