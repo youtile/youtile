@@ -42,7 +42,7 @@ So you can watch your favourite Podcasts, Videos, and Listen to your favourite M
 
 <br>
 
-<h2 align="left"><samp><b>Preview</b></samp> <img src="https://img.shields.io/github/stars/youtile/youtile?color=%238AB4F8&labelColor=101012&label=stars&style=for-the-badge" height=28 align="right" /></h2>
+<h2 align="left"><samp><b>Preview</b></samp> <img src="https://img.shields.io/github/stars/youtile/youtile?color=%238AB4F8&labelColor=101012&label=stars&style=for-the-badge" height=28 align="right" /> <img src="https://img.shields.io/github/downloads/youtile/youtile/total?color=%23B48AF8&labelColor=101012&label=downloads&style=for-the-badge" height=28 align="right" /></h2>
 
 <br>
 
