@@ -27,10 +27,19 @@
 
   /** A parsed version of the code which recognizes URLs */
   const parsedCode = () => {
-    if (code.includes('youtube.com') == false) return code;
-    else if (code.match(/(?<=\?v\=).+?(?=\&)/g)) return code.match(/(?<=\?v\=).+?(?=\&)/g)[0];
-    else if (code.match(/(?<=\?v\=).*/g)) return code.match(/(?<=\?v\=).*/g)[0];
-    return '-';
+    //   www.youtube.com/watch?v= | NYqH3HHRebs |
+    // music.youtube.com/watch?v= | qqjVwAg5fK4 | &list=RDAMVM4jBDnYE1WjI
+    if (code.includes('youtube.com')) {
+      for (let i = 0; i < code.length; i++) {
+        if (code[i] === '=') {
+          return code.slice(i + 1, i + 12);
+        }
+      }
+    }
+    // youtu.be/ | NYqH3HHRebs |
+    else if (code.includes('youtu.be')) {
+      return code.slice(code.length - 11, code.length);
+    } else return code;
   };
 
   /** Search for the video information connected to the current code */
