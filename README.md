@@ -35,7 +35,7 @@ So you can watch your favourite Podcasts, Videos, and Listen to your favourite M
 <br>
 
 <p align="center">
-    ⚠️ <b>Avoiding Advertisements</b> in only a Side-effect of Creating a Custom GUI! This is <b>NOT our Intention.</b> ⚠️
+    ⚠️ <b>Avoiding Advertisements</b> is only a Side-effect of Creating a Custom GUI! This is <b>NOT our Intention.</b> ⚠️
 </p>
     
 <br>
