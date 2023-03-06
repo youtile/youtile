@@ -7,6 +7,7 @@
 
 <div align="center">
     <b>Youtile</b> - Watching YouTube in a <b>lightweight tile!</b><br>
+    <i>Youtile is no longer being maintained</i>
 </div>
     
 <br>
